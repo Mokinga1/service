@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>MOKINGA - Inscription & Connexion</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    html, body {
+      margin: 0; padding: 0; height: 100%;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+    }
+    body {
+      display: flex; justify-content: center; align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(135deg, #ff0096 0%, #00ccff 100%);
+      background-attachment: fixed;
+    }
+    .container {
+      width: 100%; max-width: 480px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border-radius: 12px;
+      padding: 30px 25px;
+      box-sizing: border-box;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+    h1 {
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #fff;
+      text-shadow: 0 0 10px #fff;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      font-weight: bold;
+      margin-bottom: 6px;
+      margin-top: 15px;
+    }
+    input[type="email"], input[type="password"] {
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      outline: none;
+      transition: background 0.3s ease;
+    }
+    input[type="email"]:focus, input[type="password"]:focus {
+      background: rgba(255,255,255,0.4);
+    }
+    .password-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      cursor: pointer;
+      color: #ccc;
+      user-select: none;
+      font-size: 14px;
+      font-weight: bold;
+      background: transparent;
+      border: none;
+      outline: none;
+    }
+    .checkbox {
+      margin-top: 15px;
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+    }
+    .checkbox input {
+      margin-right: 8px;
+    }
+    button {
+      margin-top: 25px;
+      padding: 14px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+      background: #28a745;
+      color: white;
+      box-shadow: 0 0 10px #28a745aa;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background 0.3s ease;
+    }
+    button:hover:not(:disabled) {
+      background: #218838;
+      box-shadow: 0 0 14px #218838cc;
+    }
+    button:disabled {
+      background: #555;
+      cursor: default;
+      box-shadow: none;
+    }
+    .loading-spinner {
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top: 3px solid white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      animation: spin 1s linear infinite;
+      margin-left: 10px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
+    }
+    .toggle-button {
+      background: transparent;
+      border: none;
+      color: #fff;
+      text-decoration: underline;
+      cursor: pointer;
+      margin-top: 15px;
+      font-size: 14px;
+      align-self: center;
+    }
+    .alert {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      display: none;
+    }
+    .alert.success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .alert.error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>MOKINGA</h1>
+
+  <!-- Formulaire Inscription -->
+  <form id="registerForm">
+    <label>Email :</label>
+    <input type="email" id="registerEmail" required placeholder="Ex : rakoto@gmail.com" autocomplete="username">
+
+    <label>Mot de passe :</label>
+    <div class="password-container">
+      <input type="password" id="password" required placeholder="********" autocomplete="new-password" minlength="8">
+      <button type="button" class="toggle-password" id="togglePassword">Voir</button>
+    </div>
+
+    <div class="checkbox">
+      <input type="checkbox" id="termsCheckbox" required />
+      <label for="termsCheckbox">J’accepte les Conditions d’utilisation</label>
+    </div>
+
+    <button type="submit" id="submitBtn">S’inscrire</button>
+    <div id="registerMessage" class="alert"></div>
+
+    <button type="button" id="showLoginBtn" class="toggle-button">J’ai déjà un compte</button>
+  </form>
+
+  <!-- Formulaire Connexion -->
+  <form id="loginForm" class="hidden">
+    <label>Email :</label>
+    <input type="email" id="loginEmail" required placeholder="Ex : rakoto@gmail.com" autocomplete="username">
+
+    <label>Mot de passe :</label>
+    <div class="password-container">
+      <input type="password" id="loginPassword" required placeholder="********" autocomplete="current-password">
+      <button type="button" class="toggle-password" id="toggleLoginPassword">Voir</button>
+    </div>
+
+    <button type="submit" id="loginSubmitBtn">Se connecter</button>
+    <button type="button" id="forgotPasswordBtn" class="toggle-button">Mot de passe oublié ?</button>
+
+    <div id="loginMessage" class="alert"></div>
+
+    <button type="button" id="showRegisterBtn" class="toggle-button">Créer un compte</button>
+  </form>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDhu9gNLI-yL3n9JxTfTB4YvCklidwByUc",
+    authDomain: "mokinga-75154.firebaseapp.com",
+    projectId: "mokinga-75154",
+    storageBucket: "mokinga-75154.firebasestorage.app",
+    messagingSenderId: "629964789347",
+    appId: "1:629964789347:web:af38a6f9b6ced840e98a56",
+    measurementId: "G-LM4HNR4TTE"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  const registerForm = document.getElementById('registerForm');
+  const loginForm = document.getElementById('loginForm');
+  const showLoginBtn = document.getElementById('showLoginBtn');
+  const showRegisterBtn = document.getElementById('showRegisterBtn');
+  const passwordInput = document.getElementById('password');
+  const togglePasswordBtn = document.getElementById('togglePassword');
+  const submitBtn = document.getElementById('submitBtn');
+  const registerMessage = document.getElementById('registerMessage');
+  const termsCheckbox = document.getElementById('termsCheckbox');
+
+  const loginEmail = document.getElementById('loginEmail');
+  const loginPassword = document.getElementById('loginPassword');
+  const toggleLoginPasswordBtn = document.getElementById('toggleLoginPassword');
+  const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+  const loginMessage = document.getElementById('loginMessage');
+
+  const forgotPasswordBtn = document.getElementById('forgotPasswordBtn');
+
+  togglePasswordBtn.addEventListener('click', () => {
+    passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+    togglePasswordBtn.textContent = passwordInput.type === 'password' ? 'Voir' : 'Cacher';
+  });
+
+  toggleLoginPasswordBtn.addEventListener('click', () => {
+    loginPassword.type = loginPassword.type === 'password' ? 'text' : 'password';
+    toggleLoginPasswordBtn.textContent = loginPassword.type === 'password' ? 'Voir' : 'Cacher';
+  });
+
+  showLoginBtn.addEventListener('click', () => {
+    registerForm.classList.add('hidden');
+    loginForm.classList.remove('hidden');
+    clearMessages();
+  });
+
+  showRegisterBtn.addEventListener('click', () => {
+    loginForm.classList.add('hidden');
+    registerForm.classList.remove('hidden');
+    clearMessages();
+  });
+
+  function clearMessages() {
+    registerMessage.style.display = 'none';
+    loginMessage.style.display = 'none';
+    registerMessage.textContent = '';
+    loginMessage.textContent = '';
+  }
+
+  registerForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    clearMessages();
+
+    if (!termsCheckbox.checked) {
+      showAlert(registerMessage, 'Veuillez accepter les Conditions d’utilisation.', 'error');
+      return;
+    }
+
+    const email = document.getElementById('registerEmail').value.trim();
+    const password = passwordInput.value.trim();
+
+    if (password.length < 8) {
+      showAlert(registerMessage, 'Mot de passe : min. 8 caractères.', 'error');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = 'Création... <div class="loading-spinner"></div>';
+
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      showAlert(registerMessage, 'Compte créé ! Redirection...', 'success');
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 3000);
+    } catch (error) {
+      showAlert(registerMessage, error.message, 'error');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'S’inscrire';
+    }
+  });
+
+  loginForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    clearMessages();
+
+    const email = loginEmail.value.trim();
+    const password = loginPassword.value.trim();
+
+    loginSubmitBtn.disabled = true;
+    loginSubmitBtn.textContent = 'Connexion...';
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      showAlert(loginMessage, 'Connexion réussie !', 'success');
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 2000);
+    } catch (error) {
+      showAlert(loginMessage, error.message, 'error');
+      loginSubmitBtn.disabled = false;
+      loginSubmitBtn.textContent = 'Se connecter';
+    }
+  });
+
+  forgotPasswordBtn.addEventListener('click', async () => {
+    clearMessages();
+    const email = loginEmail.value.trim();
+
+    if (!email) {
+      showAlert(loginMessage, "Veuillez entrer votre email pour réinitialiser.", 'error');
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      showAlert(loginMessage, `Un email de réinitialisation a été envoyé à ${email}`, 'success');
+    } catch (error) {
+      showAlert(loginMessage, error.message, 'error');
+    }
+  });
+
+  function showAlert(element, message, type) {
+    element.textContent = message;
+    element.className = `alert ${type}`;
+    element.style.display = 'block';
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>MOKINGA - Mon Compte</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #ff80bf, #80eaff);
+      color: #fff;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0,0,0,0.4);
+      padding: 15px 30px;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      backdrop-filter: blur(5px);
+      z-index: 10;
+    }
+
+    .logo {
+      font-weight: bold;
+      font-size: 22px;
+      letter-spacing: 1px;
+    }
+
+    .right-section {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+    }
+
+    .menu {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .menu a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: bold;
+      transition: color 0.3s ease;
+    }
+
+    .menu a:hover {
+      color: #ffeb3b;
+    }
+
+    .logout-btn {
+      background: #ff4d4d;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background: #cc0000;
+    }
+
+    main {
+      margin-top: 100px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      border-radius: 12px;
+    }
+
+    h2 {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: none;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      font-size: 15px;
+      box-sizing: border-box;
+    }
+
+    input[readonly] {
+      background: rgba(255,255,255,0.05);
+      color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .password-container {
+      position: relative;
+    }
+
+    .password-container button {
+      position: absolute;
+      right: 5px;
+      top: 32px;
+      background: #007bff;
+      border: none;
+      color: white;
+      padding: 6px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    #modifyBtn {
+      margin-top: 25px;
+      background: #28a745;
+      border: none;
+      padding: 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    #modifyBtn:hover {
+      background: #218838;
+    }
+
+    .message {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #f8d7da;
+      background-color: #721c24;
+      padding: 10px;
+      border-radius: 6px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">MOKINGA</div>
+
+    <div class="right-section">
+      <nav class="menu">
+        <a href="taches.html">Tâches</a>
+        <a href="formations.html">Formations</a>
+        <a href="compte.html">Compte</a>
+        <a href="faq.html">FAQs</a>
+      </nav>
+      <button class="logout-btn" id="logoutBtn">Déconnexion</button>
+    </div>
+  </header>
+
+  <main>
+    <h2>Mon Compte</h2>
+
+    <label>Email :</label>
+    <input type="email" id="email" readonly />
+
+    <label>Mot de passe :</label>
+    <div class="password-container">
+      <input type="password" id="password" readonly />
+      <button type="button" id="resetPwdBtn">Réinitialiser</button>
+    </div>
+
+    <label>Nom & Prénom :</label>
+    <input type="text" id="fullName" />
+
+    <label>Adresse :</label>
+    <input type="text" id="address" />
+
+    <label>Téléphone :</label>
+    <input type="text" id="phone" />
+
+    <label>Âge :</label>
+    <input type="number" id="age" min="0" />
+
+    <label>Nationalité :</label>
+    <input type="text" id="nationality" />
+
+    <label>Sexe :</label>
+    <input type="text" id="gender" />
+
+    <button id="modifyBtn">Modifier</button>
+
+    <div class="message" id="msg"></div>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDhu9gNLI-yL3n9JxTfTB4YvCklidwByUc",
+      authDomain: "mokinga-75154.firebaseapp.com",
+      projectId: "mokinga-75154",
+      storageBucket: "mokinga-75154.firebasestorage.app",
+      messagingSenderId: "629964789347",
+      appId: "1:629964789347:web:af38a6f9b6ced840e98a56",
+      measurementId: "G-LM4HNR4TTE"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const resetPwdBtn = document.getElementById('resetPwdBtn');
+    const fullNameInput = document.getElementById('fullName');
+    const addressInput = document.getElementById('address');
+    const phoneInput = document.getElementById('phone');
+    const ageInput = document.getElementById('age');
+    const nationalityInput = document.getElementById('nationality');
+    const genderInput = document.getElementById('gender');
+    const modifyBtn = document.getElementById('modifyBtn');
+    const msgDiv = document.getElementById('msg');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    let isEditing = false;
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        emailInput.value = user.email;
+        passwordInput.value = '********';
+
+        db.collection('users').doc(user.uid).get().then(doc => {
+          if (doc.exists) {
+            const data = doc.data();
+            fullNameInput.value = data.fullName || '';
+            addressInput.value = data.address || '';
+            phoneInput.value = data.phone || '';
+            ageInput.value = data.age || '';
+            nationalityInput.value = data.nationality || '';
+            genderInput.value = data.gender || '';
+          }
+        });
+      } else {
+        window.location.href = 'index.html';
+      }
+    });
+
+    modifyBtn.addEventListener('click', () => {
+      if (!isEditing) {
+        isEditing = true;
+        modifyBtn.textContent = 'Enregistrer';
+        fullNameInput.removeAttribute('readonly');
+        addressInput.removeAttribute('readonly');
+        phoneInput.removeAttribute('readonly');
+        ageInput.removeAttribute('readonly');
+        nationalityInput.removeAttribute('readonly');
+        genderInput.removeAttribute('readonly');
+      } else {
+        const user = auth.currentUser;
+        if (user) {
+          db.collection('users').doc(user.uid).set({
+            fullName: fullNameInput.value.trim(),
+            address: addressInput.value.trim(),
+            phone: phoneInput.value.trim(),
+            age: ageInput.value.trim(),
+            nationality: nationalityInput.value.trim(),
+            gender: genderInput.value.trim()
+          }, { merge: true })
+          .then(() => {
+            msgDiv.style.display = 'block';
+            msgDiv.style.color = '#28a745';
+            msgDiv.textContent = '✅ Informations mises à jour !';
+            isEditing = false;
+            modifyBtn.textContent = 'Modifier';
+            fullNameInput.setAttribute('readonly', true);
+            addressInput.setAttribute('readonly', true);
+            phoneInput.setAttribute('readonly', true);
+            ageInput.setAttribute('readonly', true);
+            nationalityInput.setAttribute('readonly', true);
+            genderInput.setAttribute('readonly', true);
+            setTimeout(() => { msgDiv.style.display = 'none'; }, 4000);
+          })
+          .catch(err => {
+            msgDiv.style.display = 'block';
+            msgDiv.style.color = '#dc3545';
+            msgDiv.textContent = 'Erreur lors de la mise à jour.';
+          });
+        }
+      }
+    });
+
+    resetPwdBtn.addEventListener('click', () => {
+      const email = emailInput.value;
+      if (!email) {
+        alert('Email introuvable.');
+        return;
+      }
+      auth.sendPasswordResetEmail(email)
+      .then(() => {
+        alert('Email de réinitialisation envoyé.');
+      })
+      .catch(error => {
+        alert('Erreur: ' + error.message);
+      });
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      auth.signOut().then(() => {
+        window.location.href = 'index.html';
+      });
+    });
+  </script>
+
+</body>
+</html>

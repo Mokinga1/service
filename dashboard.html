@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>MOKINGA - Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    /* ton style existant ici (inchangé) */
+    body { margin:0; padding:0; height:100vh; font-family: Arial, sans-serif; background: linear-gradient(135deg, #ff80bf, #80eaff); background-attachment: fixed; color:#fff; }
+    header { display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.4); padding:15px 30px; position:fixed; top:0; left:0; right:0; backdrop-filter:blur(5px); z-index:10; }
+    .logo { font-weight:bold; font-size:22px; letter-spacing:1px; }
+    .right-section { display:flex; align-items:center; gap:25px; }
+    .user-info { display:flex; flex-direction:column; font-size:13px; text-align:right; }
+    .menu { display:flex; align-items:center; gap:20px; }
+    .menu a { color:#fff; text-decoration:none; font-size:13px; font-weight:bold; transition:color 0.3s ease; }
+    .menu a:hover { color:#ffeb3b; }
+    .logout-btn { background:#ff4d4d; border:none; padding:6px 12px; border-radius:5px; color:white; cursor:pointer; font-size:12px; font-weight:bold; transition:background 0.3s ease; }
+    .logout-btn:hover { background:#cc0000; }
+    main { margin-top:100px; padding:40px; display:flex; gap:40px; }
+    .profile-box { background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); padding:30px; border-radius:12px; flex:0 0 280px; }
+    .profile-box h2 { margin:0 0 10px 0; font-size:22px; font-weight:bold; }
+    .profile-box p { margin:5px 0; font-size:14px; word-break:break-all; }
+    .info-label { font-weight:bold; margin-top:10px; }
+    .dashboard-content { flex:1; display:flex; flex-direction:column; gap:30px; }
+    .cards { display:flex; flex-wrap:wrap; gap:20px; }
+    .card { background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); padding:20px; border-radius:12px; flex:1; min-width:200px; text-align:center; }
+    .card h3 { margin:0 0 10px; }
+    .history { background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); padding:20px; border-radius:12px; }
+    footer { margin-top:60px; text-align:center; font-size:11px; opacity:0.8; display:flex; justify-content:center; align-items:center; gap:15px; }
+    footer img { width:24px; height:auto; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">MOKINGA</div>
+
+    <div class="right-section">
+      <div class="user-info" id="userInfo">
+        <span>ID : loading...</span>
+        <span>Solde : 0 MGAK</span>
+      </div>
+
+      <nav class="menu">
+        <a href="taches.html">Tâches</a>
+        <a href="formations.html">Formations</a>
+        <a href="compte.html">Compte</a>
+        <a href="faq.html">FAQs</a>
+      </nav>
+
+      <button class="logout-btn" id="logoutBtn">Déconnexion</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Bloc profil à gauche -->
+    <div class="profile-box" id="profileBox">
+      <h2>UID : <br><strong>loading...</strong></h2>
+      <p>Email : loading...</p>
+
+      <div class="info-section">
+        <p class="info-label">Nom & Prénom :</p>
+        <p id="fullName">[Non défini]</p>
+
+        <p class="info-label">Adresse :</p>
+        <p id="address">[Non définie]</p>
+
+        <p class="info-label">Téléphone :</p>
+        <p id="phone">[Non défini]</p>
+
+        <p class="info-label">Âge :</p>
+        <p id="age">[Non défini]</p>
+
+        <p class="info-label">Nationalité :</p>
+        <p id="nationality">[Non définie]</p>
+
+        <p class="info-label">Sexe :</p>
+        <p id="gender">[Non défini]</p>
+      </div>
+    </div>
+
+    <!-- Contenu Dashboard -->
+    <div class="dashboard-content">
+      <div class="cards">
+        <div class="card">
+          <h3>Tâches totales</h3>
+          <p id="totalTasks">0</p>
+        </div>
+        <div class="card">
+          <h3>Tâches complétées</h3>
+          <p id="completedTasks">0</p>
+        </div>
+        <div class="card">
+          <h3>Heures travaillées</h3>
+          <p id="workedHours">0h</p>
+        </div>
+        <div class="card">
+          <h3>Dernière activité</h3>
+          <p id="lastActivity">-</p>
+        </div>
+      </div>
+
+      <div class="history" id="history">
+        <h3>Historique des transactions</h3>
+        <p>Aucune transaction pour le moment.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <span>MOKINGA - Associé avec Mobile Money & OKX Wallet</span>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Mobile_Phone_icon.png" alt="Mobile Money" />
+    <img src="https://seeklogo.com/images/O/okx-logo-35317727D0-seeklogo.com.png" alt="OKX" />
+  </footer>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDhu9gNLI-yL3n9JxTfTB4YvCklidwByUc",
+      authDomain: "mokinga-75154.firebaseapp.com",
+      projectId: "mokinga-75154",
+      storageBucket: "mokinga-75154.firebasestorage.app",
+      messagingSenderId: "629964789347",
+      appId: "1:629964789347:web:af38a6f9b6ced840e98a56",
+      measurementId: "G-LM4HNR4TTE"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const userInfo = document.getElementById('userInfo');
+    const profileBox = document.getElementById('profileBox');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        // Affiche l'email et UID
+        userInfo.innerHTML = `
+          <span>ID : ${user.email}</span>
+          <span>Solde : 100 MGAK</span>
+        `;
+        profileBox.querySelector('h2 strong').textContent = user.uid;
+        profileBox.querySelector('p').textContent = user.email;
+
+        // Charger les données utilisateur depuis Firestore
+        db.collection('users').doc(user.uid).get().then(doc => {
+          if (doc.exists) {
+            const data = doc.data();
+            document.getElementById('fullName').textContent = data.fullName || '[Non défini]';
+            document.getElementById('address').textContent = data.address || '[Non définie]';
+            document.getElementById('phone').textContent = data.phone || '[Non défini]';
+            document.getElementById('age').textContent = data.age || '[Non défini]';
+            document.getElementById('nationality').textContent = data.nationality || '[Non définie]';
+            document.getElementById('gender').textContent = data.gender || '[Non défini]';
+            // Tu peux aussi charger et afficher tâches, historique, etc. ici
+          } else {
+            console.log("Profil utilisateur non trouvé.");
+          }
+        });
+
+      } else {
+        // Redirection si non connecté
+        window.location.href = 'index.html'; // ou ta page de login
+      }
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      auth.signOut().then(() => {
+        window.location.href = 'index.html';
+      });
+    });
+  </script>
+</body>
+</html>
